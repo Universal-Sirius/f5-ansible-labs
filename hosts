@@ -5,6 +5,6 @@ f5
 <<siduserID>>.f5.mysidlabs.com private_ip=<<privateIP>>
 
 [webservers]
-Web1 private_ip=172.31.46.238
-Web2 private_ip=172.31.36.36
-Web3 private_ip=172.31.32.240
+Web1 private_ip=172.31.15.54
+Web2 private_ip=172.31.14.151
+Web3 private_ip=172.31.5.23
