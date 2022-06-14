@@ -1,1 +1,0 @@
-ansible-builder build --build-arg EE_BASE_IMAGE=registry.redhat.io/ansible-automation-platform-22/ee-supported-rhel8:latest --tag ghcr.io/mysidlabs/f5-ee:latest
