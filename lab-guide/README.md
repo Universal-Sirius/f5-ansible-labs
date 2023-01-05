@@ -1,4 +1,4 @@
-# Ansible F5 Automation IMmersion Day Workshop
+# Ansible F5 Automation Immersion Day Workshop
 You will use Ansible commands and playbooks to explore and reconfigure a F5 in a virtual environment.  Note, that even though we are using a virtual environment, this is not a requirement, everything we do, can be done on physical devices.   
 
 The Immersion Day is meant as a follow on to the Network Automation Immersion Day.  Some content will be review but in respect to using Ansible with F5.  While you can go through these labs there may be concepts that were covered previously that we will not cover as it is expected that these concepts are already understood.  Throughout the labs we hope to share some additional features, elements, good and bad practices and patterns to using Ansible for Automation. 
