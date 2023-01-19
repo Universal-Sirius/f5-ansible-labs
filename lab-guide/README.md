@@ -1440,19 +1440,19 @@ The jinja2 template can use loops to grab all the pool members (which points to 
 
 **Review the output and see what information is in the output.**
 ```bash
-**connection:** - local tells the Playbook to run locally (rather than SSHing to itself)
+connection: - local tells the Playbook to run locally (rather than SSHing to itself)
 
-**uri:** - this task is calling the uri module
+uri: - this task is calling the uri module
 
-**url:** "https://{{ ansible_host }}:8443/mgmt/shared/appsvcs/declare" - webURL (API) for AS3
+url: "https://{{ ansible_host }}:8443/mgmt/shared/appsvcs/declare" - webURL (API) for AS3
 
-**method:** POST - HTTP method of the request, must be uppercase. Module documentation page has list of all
+method: POST - HTTP method of the request, must be uppercase. Module documentation page has list of all
 options.
 
-**body:** "{{ lookup('template','j2/ as3_template.j2', split_lines=False) }}" - This passed the template as the body for
+body: "{{ lookup('template','j2/ as3_template.j2', split_lines=False) }}" - This passed the template as the body for
 the API request
 
-**status_code:** 200 - A valid, numeric, HTTP status code that signifies success of the request. This can be comma
+status_code: 200 - A valid, numeric, HTTP status code that signifies success of the request. This can be comma
 separated list of status codes. In this instance we use 200 which means OK, this is a standard response for
 successful HTTP requests
 ```
@@ -1475,7 +1475,7 @@ siduser250@toolkit ~/ansible-f5-labs # ansible-playbook 3.0-as3.yaml
     name you used
     The Virtual Server will be displayed.
     Check Pools for app_pool
-    
+
 > :small_red_triangle: ***Notice that it is not working.***
 
 
@@ -1496,7 +1496,7 @@ The port 443 is incorrect. The two web servers are only running on port 80. This
 
 We need to get this up and working so we need to make sure that we are using port 80 not 443. Start by looking at the file called
 31_as3_template.j2
-
+```bash
     siduser250@toolkit ~/ansible-f5-labs # cat 31_as3_template.j2
     << output omitted >>
      "web_pool": {
@@ -1514,7 +1514,8 @@ We need to get this up and working so we need to make sure that we are using por
      {% endfor %}
      ]
     << output omitted >>
-    
+```
+
 While understanding the F5 AS3 JSON is out of scope for this class we can see that the servicePort parameter under the members
 section is set to port 80 instead of port 443 like it was in the 3.0 lab. To find out more about the AS3 formatting an option you can
 look at the F5 documentation:
@@ -1523,16 +1524,16 @@ look at the F5 documentation:
 *Step 3*
 
 **Look at the file called 3.1-as3.yaml**
-
+```bash
     siduser250@toolkit ~/ansible-f5-labs # cat 3.1-as3.yaml
     << output omitted >>
-    
+```    
 *Step 4*     
 
 Run the playbook:
-
+```bash
     siduser250@toolkit ~/ansible-f5-labs # ansible-playbook 3.1-as3.yaml
-    
+```    
 *Step 5*
 
 **Verifying that the playbook did what you expected. Login to the F5 with your web browser to see what was configured.**
@@ -1548,28 +1549,29 @@ Run the playbook:
 If everything looks good from an F5 standpoint, verifying the web servers
 Open up the public IP of the F5 load balancer in your web browser:
 
+```bash
     https://<<siduserID>>.f5.mysidlabs.com/
-    
+```    
 Each time you refresh the host will change between web1 and web2.
 
 
 *Alternate Verification Method*
 
 **You can use the curl command on the jump station to access public IP**
-
-    siduser250@toolkit ~/ansible-f5-labs # curl https:// <<siduserID>>.f5.mysidlabs.com:443 --insecure
-    siduser250@toolkit ~/ansible-f5-labs # curl https:// <<siduserID>>.f5.mysidlabs.com:443 --insecure
-    siduser250@toolkit ~/ansible-f5-labs # curl https:// <<siduserID>>.f5.mysidlabs.com:443 --insecure
-    << output omitted >>
-    
+```bash
+siduser250@toolkit ~/ansible-f5-labs # curl https:// <<siduserID>>.f5.mysidlabs.com:443 --insecure
+siduser250@toolkit ~/ansible-f5-labs # curl https:// <<siduserID>>.f5.mysidlabs.com:443 --insecure
+siduser250@toolkit ~/ansible-f5-labs # curl https:// <<siduserID>>.f5.mysidlabs.com:443 --insecure
+<< output omitted >>
+```    
     
 ### Lab 3.2: Deleting a web application
 
 *Step 1*
 
 **Look at the file called 3.2-as3-delete.yaml**
-
-    siduser250@toolkit ~/ansible-f5-labs # cat 3.2-as3-delete.yaml
+```yaml
+siduser250@toolkit ~/ansible-f5-labs # cat 3.2-as3-delete.yaml
     ---
     - name: AS3
      hosts: lb
@@ -1592,7 +1594,7 @@ Each time you refresh the host will change between web1 and web2.
      user: "{{ username }}"
      password: "{{ lb_password }}"
      validate_certs: false
-     
+``` 
 *Step 2*
 
 **Review the output and see what information is in the output.**
@@ -1603,10 +1605,11 @@ Each time you refresh the host will change between web1 and web2.
 *Step 3*
 
 **Run the playbook:**
-
+```bash
     siduser250@toolkit ~/ansible-f5-labs # ansible-playbook 3.2-as3-delete.yaml
     << output omitted >>
-    
+```
+
 *Step 4*    
 
     Verifying that the playbook did what you expected. Login to the F5 with your web browser to see that the configuration was saved 
@@ -1774,9 +1777,9 @@ Check Pools for app_pool that both web servers are set to port 80 for their serv
 
 If everything looks good from an F5 standpoint, verifying the web servers
 Open up the public IP of the F5 load balancer in your web browser:
-
+```bash
     https://<<siduserID>>.f5.mysidlabs.com/ 
-    
+```   
     
 ***Each time you refresh the host will change between web1 and web2.***
 
@@ -1785,10 +1788,12 @@ Open up the public IP of the F5 load balancer in your web browser:
 
 **You can use the curl command on the jump station to access public IP.**
 
-    siduser250@toolkit ~/ansible-f5-labs # curl https:// <<siduserID>>.f5.mysidlabs.com:443 --insecure
-    siduser250@toolkit ~/ansible-f5-labs # curl https:// <<siduserID>>.f5.mysidlabs.com:443 --insecure
-    siduser250@toolkit ~/ansible-f5-labs # curl https:// <<siduserID>>.f5.mysidlabs.com:443 --insecure
-    << output omitted >>
+```bash
+siduser250@toolkit ~/ansible-f5-labs # curl https:// <<siduserID>>.f5.mysidlabs.com:443 --insecure
+siduser250@toolkit ~/ansible-f5-labs # curl https:// <<siduserID>>.f5.mysidlabs.com:443 --insecure
+siduser250@toolkit ~/ansible-f5-labs # curl https:// <<siduserID>>.f5.mysidlabs.com:443 --insecure
+<< output omitted >>
+```
 
 
 
@@ -1803,7 +1808,7 @@ Useful resource links and information
 
 Links:
 
-
+```bash 
     Ansible Best Practices
 https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html
 
@@ -1815,7 +1820,7 @@ https://www.ansible.com/blog/deep-dive-on-cli-command-for-network-automation
 
     Variable precedence
 https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-precedence-where-shouldi-put-a-variable
-
+```
 
 
 - Remember YAML is very **sensitive** to correct indentation
