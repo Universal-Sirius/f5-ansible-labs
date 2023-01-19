@@ -232,11 +232,14 @@ siduser250@toolkit ~/ansible-f5-labs # pwd
 If you are not, change to the ansible-f5-labs directory
 siduser250@toolkit ~ # cd ~/ansible-f5-labs/
 ```
+---
 
 *Step 2*
+
+Run the ansible command with the --version command to look at what is configured?:
+
 ```bash
-Run the ansible command with the --version command to look at what is configured:
-siduser250@toolkit ~/ansible-f5-labs # ansible --version
+siduser250@toolkit ~/ansible-f5-labs >ansible --version
 ansible 2.9.7
 config file = /home/siduser250/ansible-f5-labs/ansible.cfg
 configured module search path = ['/home/siduser250/.ansible/plugins/modules','/usr/share/ansible/plugins/modules']
@@ -279,12 +282,12 @@ command_timeout = 60
     
 *Step 4*
     
-    The scope of a play within a playbook is limited to the groups of hosts declared within an Ansible inventory. Ansible supports
-    multiple inventory types. An inventory could be a simple flat file with a collection of hosts defined within it or it could be a dynamic
-    script (potentially querying a CMDB backend) that generates a list of devices to run the playbook against
+The scope of a play within a playbook is limited to the groups of hosts declared within an Ansible inventory. Ansible supports
+multiple inventory types. An inventory could be a simple flat file with a collection of hosts defined within it or it could be a dynamic script (potentially querying a CMDB backend) that generates a list of devices to run the playbook against
+
     
 You will work with a file-based inventory written in the ini format. Use the cat command to view the contents of your inventory:
-```bash
+```yaml
 siduser250@toolkit ~/ansible-f5-labs # cat hosts
 [lb:children]
 f5
@@ -1766,9 +1769,9 @@ Examine the Details pane
 
 Verifying that the playbook did what you expected. Login to the F5 with your web browser to see what was configured.
 
-    Click on the Local Traffic on the left-hand menu
-    Click on Virtual Servers.
-    The Virtual Server will be displayed.
+1. Click on the Local Traffic on the left-hand menu
+1. Click on Virtual Servers.
+1. The Virtual Server will be displayed.
 
 ***This time it will be Green (Available (Enabled) - The virtual server is available)*** 
 
