@@ -1092,7 +1092,7 @@ Review the output and see what information is in the output
 ```bash
     -vars_prompt: - this section is used to prompt the user for input. In this case we will be asking for username and
 password.
-```
+
 
 > :small_red_triangle: ***NOTE: Setting the default parameter for username and password prompts is a very bad idea. They are
 used here for simplicity in a lab environment that gets erased.***
@@ -1106,15 +1106,15 @@ used here for simplicity in a lab environment that gets erased.***
     -pause: - pauses the running of the playbook. Can be used to pause for a specific amount of time or to ask for user input
     
     -when: - runs the task, or group of tasks when used with block: when conditions are met
-    
+```
     
 *Step 4*    
 
 Run the playbook:
-
-    siduser250@toolkit ~/ansible-f5-labs # ansible-playbook 2.0-bigip-disable-pool-member.yaml
+```bash
+siduser250@toolkit ~/ansible-f5-labs # ansible-playbook 2.0-bigip-disable-pool-member.yaml
     << output omitted >>
-    
+ ```   
  *Step 5*
  
  Verifying that the playbook did what you expected. Login to the F5 with your web browser to see what was configured.
@@ -1128,7 +1128,7 @@ Run the playbook:
 *Step 1*
     
 Look at the file called 2.1-bigip-pool-members.yaml
-
+```yaml
     siduser250@toolkit ~/ansible-f5-labs # cat 2.1-bigip-delete-configuration.yaml
     ---
     - name: BIG-IP TEARDOWN
@@ -1169,36 +1169,36 @@ Look at the file called 2.1-bigip-pool-members.yaml
     name: "{{ hostvars[item].inventory_hostname }}"
     state: absent
     loop: "{{ groups['webservers'] }}"
-
+```
 
 *Step 2*
 
-Review the output and see what information is in the output.
+    Review the output and see what information is in the output.
 
 *Step 3*
 
 Run the playbook:
-
-    siduser250@toolkit ~/ansible-f5-labs # ansible-playbook 2.1-bigip-delete-configuration.yaml
+```bash
+siduser250@toolkit ~/ansible-f5-labs # ansible-playbook 2.1-bigip-delete-configuration.yaml
     << output omitted >>
-    
+```    
     
 *Step 4*
 
 Verifying that the playbook did what you expected. Login to the F5 with your web browser to see what was configured.
 Navigate the menu on the left and view that the configuration has been deleted:
 
-
+```bash
     Local Traffic Manager -> Virtual Server
     Local Traffic Manager -> Pool
     Local Traffic Manager -> Node
-
+```
 ### Lab 2.2: Error handling
 
 *Step 1*
 
 Look at the file called 2.2-bigip-error-handling.yaml
-
+```yaml
     siduser250@toolkit ~/ansible-f5-labs # cat 2.2-bigip-error-handling.yaml
     
     ---
@@ -1280,7 +1280,7 @@ Look at the file called 2.2-bigip-error-handling.yaml
      bigip_config:
      provider: "{{ provider }}"
      save: true
-     
+```     
 *Step 2*
 
 Review the output and see what information is in the output.
@@ -1293,10 +1293,11 @@ Review the output and see what information is in the output.
 *Step 3*
 
 Run the playbook:
-
-    siduser250@toolkit ~/ansible-f5-labs # ansible-playbook 2.2-bigip-error-handling.yaml
+```bash
+siduser250@toolkit ~/ansible-f5-labs # ansible-playbook 2.2-bigip-error-handling.yaml
     << output omitted >>
-    
+```
+
 *Step 4*
 
     You will see that the playbook will try and configure the Virtual Server, Pool and Nodes but that there is failure and the 'rescue' block runs
@@ -1314,11 +1315,11 @@ working as expected.
 
 *Step 1*
 
-***Make sure the BIG-IP configuration is clean, run exercise 2.1 delete-configuration before proceeding*** 
-
-    siduser250@toolkit ~/ansible-f5-labs # ansible-playbook 2.1-bigip-delete-configuration.yaml
+> :small_red_triangle: ***Make sure the BIG-IP configuration is clean, run exercise 2.1 delete-configuration before proceeding*** 
+```bash
+siduser250@toolkit ~/ansible-f5-labs # ansible-playbook 2.1-bigip-delete-configuration.yaml
     << output omitted >>
-    
+```    
 *Step 2*
 
 **Download AS3 RPM at**
@@ -1338,7 +1339,7 @@ working as expected.
     
 ![](images/image9.png)
 
-**Make sure that f5-appsvcs is installed. You may need too refresh the screen a few times.**
+> :small_red_triangle: **Make sure that f5-appsvcs is installed. You may need too refresh the screen a few times.**
 
 ![](images/image10.png)
 
@@ -1349,6 +1350,7 @@ If this is not working, please ask your instructor for help.
 Before starting we look at the Playbooks, it is important to understand how AS3 works. AS3 requires a JSON template to be sent as
 an API call to the F5. You do not need to fully understand every parameter or create these templates from scratch.**Look at the file called 30_as3_template.j2**
 
+```bash
     siduser250@toolkit ~/ansible-f5-labs # cat 30_as3_template.j2
     
     {
@@ -1392,7 +1394,8 @@ an API call to the F5. You do not need to fully understand every parameter or cr
      {% endfor %}
      ]
     << output omitted >>
-    
+```
+
 This template is a JSON representation of the Web Application. The important parts to note are:
 
 The template is a Jinja2 template which allows us to use variables. In this case we have a few variable such as "{{
@@ -1405,7 +1408,7 @@ The jinja2 template can use loops to grab all the pool members (which points to 
 *Step 5*
 
 **Look at the file called 3.0-as3.yaml**
-
+```yaml
     siduser250@toolkit ~/ansible-f5-labs # cat 3.0-as3.yaml
     ---
     - name: AS3
@@ -1432,11 +1435,11 @@ The jinja2 template can use loops to grab all the pool members (which points to 
      user: "{{ username }}"
      password: "{{ lb_password }}"
      validate_certs: false
-     
+```     
 *Step 6*
 
 **Review the output and see what information is in the output.**
-
+```bash
 **connection:** - local tells the Playbook to run locally (rather than SSHing to itself)
 
 **uri:** - this task is calling the uri module
@@ -1452,14 +1455,16 @@ the API request
 **status_code:** 200 - A valid, numeric, HTTP status code that signifies success of the request. This can be comma
 separated list of status codes. In this instance we use 200 which means OK, this is a standard response for
 successful HTTP requests
+```
 
 *Step 7*
 
 Run the playbook:
-
-    siduser250@toolkit ~/ansible-f5-labs # ansible-playbook 3.0-as3.yaml
+```bash
+siduser250@toolkit ~/ansible-f5-labs # ansible-playbook 3.0-as3.yaml
     << output omitted >>
-    
+```
+
 *Step 8*
 
 **Login to the F5 with your web browser to see what was configured.**
@@ -1470,7 +1475,8 @@ Run the playbook:
     name you used
     The Virtual Server will be displayed.
     Check Pools for app_pool
-***Notice that it is not working.***
+    
+> :small_red_triangle: ***Notice that it is not working.***
 
 
 ### Lab 3.1: Operational changes with AS3
