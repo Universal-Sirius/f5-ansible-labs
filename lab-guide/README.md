@@ -113,17 +113,19 @@ User and password for F5 BigIP: admin  / Mys1dlabspw!
 
 *Step 1*
 
-Open your web browser (Chrome or Firefox)
+    Open your web browser (Chrome or Firefox)
 
 
 *Step 2*
-
+```bash
 Put the address of your F5 in the address bar including the port number 8443
 `https://siduser155.f5.mysidlabs.com:8443`
-
+``` 
 *Step 3*
 
-Proceed through the warnings regarding the SSL certificate not being valid
+    Proceed through the warnings regarding the SSL certificate not being valid
+
+
 
 >****Note: Some browsers will not allow you to connect/bypass the security warning due to settings and the fact that the SSL
 certificate is a self-signed certificate and cannot be validated. You may have to change browsers in order to bypassthe
@@ -131,7 +133,7 @@ security warning.****
 
 *Step 4*
 
-Record the F5 Private IP address
+    Record the F5 Private IP address
 
 ![](image/image5.png)
 
@@ -149,29 +151,30 @@ Login into the F5 BigIP
 
 *Step 1*
 
-    Your terminal prompt should change to something like the following:
-
-    siduser250@jump:~$
-
+Your terminal prompt should change to something like the following:
+```bash
+siduser250@jump:~$
+```
 *Step 2*
 
-    Type in ‘lab ansible’ at the promt:
-
-    siduser101@jump:~$ TAG=1.3.1 lab ansible
-
+Type in ‘lab ansible’ at the promt:
+```bash
+siduser101@jump:~$ TAG=1.3.1 lab ansible
+```
 
 *Step 3*
 
-    Your terminal prompt should change to something like the following:
-
-    siduser250@toolkit ~ #
+Your terminal prompt should change to something likethe following:
+```bash 
+siduser250@toolkit ~ #
+```
 
 *Step 4*
 
-    Clone your repository
-
-    siduser250@toolkit ~ # git clone https://github.com/<<YOUR_GITHUB_USER>>/ansible-f5-labs
-    
+Clone your repository
+```bash
+siduser250@toolkit ~ # git clone https://github.com/<<YOUR_GITHUB_USER>>/ansible-f5-labs
+```    
     
 > :exclamation: ***Tip: The usage of git becomes very important to “infrastructure as code”. Everything resides in github including your
 changes. If you lose connection from the jump box, the repository will be deleted automatically. All you need to
@@ -250,6 +253,7 @@ This command gives you information about the version of Ansible, location of the
 Use the cat command to view the contents of the ansible.cfg file.
 ```bash
 siduser250@toolkit ~/ansible-f5-labs # cat ansible.cfg
+
 [defaults]
 deprecation_warnings = False
 gathering = explicit
