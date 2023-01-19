@@ -447,32 +447,36 @@ siduser150@toolkit ~/ansible-f5-labs # ansible-vault --help)
 *Step 1*
 
 Look at the file called 1.2.1-bigip-facts.yaml
+```bash
+siduser250@toolkit ~/ansible-f5-labs # cat 1.2.1-bigip-facts.yaml
+---
+- name: GRAB F5 FACTS
+hosts: f5
+connection: local
+gather_facts: false
+<< output omitted >>
+```
 
-    siduser250@toolkit ~/ansible-f5-labs # cat 1.2.1-bigip-facts.yaml
-    ---
-    - name: GRAB F5 FACTS
-    hosts: f5
-    connection: local
-    gather_facts: false
-    << output omitted >>
-    
  *Step 2*
  
  Ansible playbooks are YAML files. The extension for these files is typically, yml or yaml. YAML is a structured encoding format that is
 also extremely human readable.
 
-    --- - at the top of the file indicates that this is the start of the YAML file.
-    hosts: f5 - indicates the play is run only on the F5 BIG-IP device
-    connection: local - tells the playbook to run locally (rather than SSHing to itself)
-    gather_facts: no - disables facts gathering. We are not using any fact variables for this playbook.
-    
+```bash
+--- - at the top of the file indicates that this is the start of the YAML file.
+hosts: f5 - indicates the play is run only on the F5 BIG-IP device
+connection: local - tells the playbook to run locally (rather than SSHing to itself)
+gather_facts: no - disables facts gathering. We are not using any fact variables for this playbook.
+```
+
  *Step 3*
  
  Run the playbook:
- 
-    siduser250@toolkit ~/ansible-f5-labs # ansible-playbook 1.2.1-bigip-facts.yaml --ask-vault-pass
+```bash 
+siduser250@toolkit ~/ansible-f5-labs # ansible-playbook 1.2.1-bigip-facts.yaml --ask-vault-pass
     << output omitted >>
-    
+```
+
 *Step 4*
 
     Review the output and see what information is in the output. Notice the formatting is in JSON format.
@@ -481,48 +485,49 @@ also extremely human readable.
 *Step 5*
 
 Look at the file called 1.2.2-bigip-filter-facts.yaml.
-
-    siduser250@toolkit ~/ansible-f5-labs # cat 1.2.2-bigip-filter-facts.yaml
-    << output omitted >>
-    
+```bash 
+siduser250@toolkit ~/ansible-f5-labs # cat 1.2.2-bigip-filter-facts.yaml
+<< output omitted >>
+```    
 
 *Step 6*
 
 Review the output and see what information is in the output. Notice:
+```bash
+var: device_facts['system_info']['base_mac_address']
+ and 
+var: device_facts['system_info']['product_version']
 
-    var: device_facts['system_info']['base_mac_address']
-    and 
-    var: device_facts['system_info']['product_version']
+device_facts – This is the register variable created for the output of the information gathered by the
 
-    device_facts – This is the register variable created for the output of the information gathered by the
+bigip_device_info module
 
-    bigip_device_info module
+system_info – This is the parent level of the JSON output of the information gathered by the bigip_device_info
 
-    system_info – This is the parent level of the JSON output of the information gathered by the bigip_device_info
+module
 
-    module
-
-    base_mac_address and product_version – are the variable used to store the specific information
-    
+base_mac_address and product_version – are the variable used to store the specific information
+```    
 
 *Step 7*
 
 Run the playbook:
-
-    siduser250@toolkit ~/ansible-f5-labs # ansible-playbook 1.2.2-bigip-filter-facts.yaml --ask-vault-pass
-    << output omitted >>
-    
+```bash
+siduser250@toolkit ~/ansible-f5-labs # ansible-playbook 1.2.2-bigip-filter-facts.yaml --ask-vault-pass
+<< output omitted >>
+```    
     
 *Bonus Exercise*
 
 For this bonus exercise add the following to the 1.2.2-bigip-filter-facts.yaml playbook
+```yaml
+- name: DISPLAY COMPLETE BIG-IP SYSTEM INFORMATION
+  debug:
+    var: device_facts
+tags: debug
+```
 
-    - name: DISPLAY COMPLETE BIG-IP SYSTEM INFORMATION
-      debug:
-       var: device_facts
-      tags: debug
-
-***Note the “tags: debug: parameter (at the task level). Tags allow for flexibility when running playbooks.
+> :small_red_triangle: ***Note the “tags: debug: parameter (at the task level). Tags allow for flexibility when running playbooks.
 Also add a facts tag to the gather facts play. Your play should look like the screenshot below:***
 
 
@@ -534,10 +539,11 @@ Also add a facts tag to the gather facts play. Your play should look like the sc
 
 
 Now re-run the playbook with the --skip-tags-debug command line option.
+```bash
+ansible-playbook 1.2.2-bigip-filter-facts.yaml --ask-vault-pass --skip-tags=debug
+ansible-playbook 1.2.2-bigip-filter-facts.yaml --ask-vault-pass --tags=facts,debug
+```
 
-    ansible-playbook 1.2.2-bigip-filter-facts.yaml --ask-vault-pass --skip-tags=debug
-    ansible-playbook 1.2.2-bigip-filter-facts.yaml --ask-vault-pass --tags=facts,debug
-    
 The Ansible Playbook will only run three tasks, skipping the DISPLAY COMPLETE BIG-IP SYSTEM INFORMATION task
 
 
@@ -548,65 +554,67 @@ The Ansible Playbook will only run three tasks, skipping the DISPLAY COMPLETE BI
 *Step 1*
 
 Look at the file called 1.3-bigip-node.yaml
-
-    siduser250@toolkit ~/ansible-f5-labs # cat 1.3-bigip-node.yaml
-    ---
-    - name: BIG-IP SETUP
-    hosts: lb
-    connection: local
-    gather_facts: false
+```yaml
+siduser250@toolkit ~/ansible-f5-labs # cat 1.3-bigip-node.yaml
+---
+- name: BIG-IP SETUP
+hosts: lb
+connection: local
+gather_facts: false
  
-    tasks:
-    - name: CREATE NODES
-    bigip_node:
-    provider:
-    server: "{{ ansible_host }}"
-    user: "{{ f5_username }}"
-    password: "{{ f5_password }}"
-    server_port: 8443
-    validate_certs: false
+tasks:
+- name: CREATE NODES
+bigip_node:
+provider:
+server: "{{ ansible_host }}"
+user: "{{ f5_username }}"
+password: "{{ f5_password }}"
+server_port: 8443
+validate_certs: false
  
-    host: "{{ hostvars[item].private_ip }}"
-    name: "{{ hostvars[item].inventory_hostname }}"
-    loop: "{{ groups['webservers'] }}"
-    
+host: "{{ hostvars[item].private_ip }}"
+name: "{{ hostvars[item].inventory_hostname }}"
+loop: "{{ groups['webservers'] }}"
+```    
     
 *Step 2*
 
 Review the output and see what information is in the output.
 
-    name: CREATE NODES - is a user defined description that will display in the terminal output
+```bash
+name: CREATE NODES - is a user defined description that will display in the terminal output
     
-    bigip_node: - The module we are going to use. Everything except loop is a module parameter defined on the
+bigip_node: - The module we are going to use. Everything except loop is a module parameter defined on the
 
-    module documentation page.
+module documentation page.
 
-    provider: - is a group of connection details for the BIG-IP
-    server: "{{ ansible_host }}" - tells the module to connect to the F5 BIG-IP
+provider: - is a group of connection details for the BIG-IP
+ server: "{{ ansible_host }}" - tells the module to connect to the F5 BIG-IP
 
-    user: "{{ f5_username }}" - the username to login to the F5 BIG-IP device with
+user: "{{ f5_username }}" - the username to login to the F5 BIG-IP device with
 
-    password: "{{ f5_password }}" - the password to login to the F5 BIG-IP device with
+password: "{{ f5_password }}" - the password to login to the F5 BIG-IP device with
 
-    server_port: 8443 - the port to connect to the F5 BIG-IP device with
+server_port: 8443 - the port to connect to the F5 BIG-IP device with
 
-    host: "{{ hostvars[item].private_ip }}" - add a web server IP address already defined in our inventory
+host: "{{ hostvars[item].private_ip }}" - add a web server IP address already defined in our inventory
 
-    name: "{{ hostvars[item].inventory_hostname }}" - use the inventory_hostname as the name (which will be web1
+name: "{{ hostvars[item].inventory_hostname }}" - use the inventory_hostname as the name (which will be web1
 
-    and web2)
+and web2)
 
-        validate_certs: "no" - do not validate SSL certificates. This is just used for demonstration purposes since this is a lab
+validate_certs: "no" - do not validate SSL certificates. This is just used for demonstration purposes since this is a lab
 
-    loop: "{{ groups['webservers'] }}" - tells the task to loop over the webservers group. The list in this case includes two hosts.
-    
+loop: "{{ groups['webservers'] }}" - tells the task to loop over the webservers group. The list in this case includes two hosts.
+```    
   *Step 3:*
   
  Run the playbook:
- 
-    siduser250@toolkit ~/ansible-f5-labs # ansible-playbook 1.3-bigip-node.yaml --ask-vault-pass
-    << output omitted >>
-    
+
+```bash 
+siduser250@toolkit ~/ansible-f5-labs # ansible-playbook 1.3-bigip-node.yaml --ask-vault-pass
+<< output omitted >>
+```   
     
    *Step 4:*
 
@@ -624,62 +632,63 @@ The list of nodes can be found by navigating the menu on the left. Click on Loca
 ## Lab1.4: Adding a load balancing pool
 
 *Step 1*
-
+```yaml
 Look at the file called 1.4-bigip-pool.yaml 
 
-    siduser250@toolkit ~/ansible-f5-labs # cat 1.4-bigip-pool.yaml
-    ---
-    - name: BIG-IP SETUP
-    hosts: lb
-    connection: local
-    gather_facts: false
+siduser250@toolkit ~/ansible-f5-labs # cat 1.4-bigip-pool.yaml
+---
+- name: BIG-IP SETUP
+hosts: lb
+connection: local
+gather_facts: false
 
-    tasks:
-    - name: CREATE POOL
-    bigip_pool:
-    provider:
-    server: "{{ ansible_host }}"
-    user: "{{ f5_username }}"
-    password: "{{ f5_password }}"
-    server_port: 8443
-    validate_certs: false
-    name: "http_pool"
-    lb_method: "round-robin"
-    monitors: "/Common/http"
-    monitor_type: "and_list"
-    
+tasks:
+- name: CREATE POOL
+bigip_pool:
+provider:
+server: "{{ ansible_host }}"
+user: "{{ f5_username }}"
+password: "{{ f5_password }}"
+server_port: 8443
+validate_certs: false
+name: "http_pool"
+lb_method: "round-robin"
+monitors: "/Common/http"
+monitor_type: "and_list"
+```    
     
 
 *Step 2*
 
 
 Review the output and see what information is in the output.
-
-    bigip_pool: - the module we are going to use
-    name: "http_pool" - tells the module to create a pool named http_pool
-    lb_method: "round-robin" - the load balancing method will be round-robin. A full list of methods can be found on
-    the documentation page for bigip_pool
-    monitors: "/Common/http" - the http_pool will only look at http traffic
-    monitor_type: "and_list" - ensures that all monitors are checkednO 
-
+```bash
+bigip_pool: - the module we are going to use
+name: "http_pool" - tells the module to create a pool named http_pool
+lb_method: "round-robin" - the load balancing method will be round-robin. A full list of methods can be found on
+the documentation page for bigip_pool
+monitors: "/Common/http" - the http_pool will only look at http traffic
+monitor_type: "and_list" - ensures that all monitors are checkednO 
+```
 
 *Step 3*
 
 Run the playbook:
 
-    siduser250@toolkit ~/ansible-f5-labs # ansible-playbook 1.4-bigip-pool.yaml --ask-vault-pass
-    << output omitted >>
-    
+```bash
+siduser250@toolkit ~/ansible-f5-labs # ansible-playbook 1.4-bigip-pool.yaml --ask-vault-pass
+<< output omitted >>
+```   
     
 *Step 4*  
 
-    Verifying that the playbook did what you expected. Login to the F5 with your web browser to see what was configured.
+Verifying that the playbook did what you expected. Login to the F5 with your web browser to see what was configured.
 
-    The load balancer pool can be found by navigating the menu on the left. Click on Local Traffic-> then click on Pools.
+The load balancer pool can be found by navigating the menu on the left. Click on Local Traffic-> then click on Pools.
 
 
 
-## Lab1.5: Adding a load balancing pool
+## Lab1.4: Adding a load balancing pool
 
 *Step 1*
 
@@ -739,11 +748,16 @@ Run the playbook:
     
 *Step 4*
 
-Verifying that the playbook did what you expected. Login to the F5 with your web browser to see what was configured.
-The pool will now show two members (web1 and web2). Click on Local Traffic-> then click on Pools. Click on http_pool to get more
-granular information. Click on the Members tab in the middle to list all the Members.
+Verifying that the playbook did what you expected. Login to the F5 with your web browser to see what was configured.Grab the IP information for the F5 load balancer from the lab_inventory/hosts file and type it in like so:
+```bash
+https://<<siduserID>>.f5.mysidlabs.com:8443/
+```
 
-
+    Login information for the BIG-IP:
+        username: admin
+    password: found in the vault file
+    
+The list of nodes can be found by navigating the menu on the left. Click on Local Traffic-> then click on Nodes.
 
 ## Lab1.6: Adding a virtual server
 
