@@ -284,32 +284,41 @@ command_timeout = 60
     script (potentially querying a CMDB backend) that generates a list of devices to run the playbook against
     
 You will work with a file-based inventory written in the ini format. Use the cat command to view the contents of your inventory:
+```bash
+siduser250@toolkit ~/ansible-f5-labs # cat hosts
+[lb:children]
+f5
 
-    siduser250@toolkit ~/ansible-f5-labs # cat hosts
-    [lb:children]
-    f5
-    [f5]
-    <<siduserID>>.f5.mysidlabs.com private_ip=<<privateIP>>
-    [webservers]
-    web1 ansible_host=3.136.84.180 private_ip=172.31.19.21
-    web2 ansible_host=3.136.11.17 private_ip=172.31.20.204
-    
+
+[f5]
+<<siduserID>>.f5.mysidlabs.com private_ip=<<privateIP>>
+
+[webservers]
+
+web1 ansible_host=3.136.84.180 private_ip=172.31.19.21
+web2 ansible_host=3.136.11.17 private_ip=172.31.20.204
+```
     
 *Step 5*
     
-    In the above output every [ ] defines a group. For example [webservers] is a group that contains the hosts, web1 and web2.
-    Note: A group called all always exists and contains all groups and hosts defined within an inventory.           
-    We can associate variables to groups and hosts. Host variables are declared/defined on the same line as the host themselves. For
+In the above output every [ ] defines a group. For example [webservers] is a group that contains the hosts, web1 and web2.
 
 
-    example, for the host f5:
-    <<siduserID>>.f5.mysidlabs.com private_ip=<<privateIP>>
-    <<siduserID>>.f5.mysidlabs.com - The name that Ansible will use. Since this is an FQDN Ansible will do a DNS
+> Note: A group called all always exists and contains all groups and hosts defined within an inventory.           
+  
 
-lookup to get the IP address. We will need to modify this to a valid FQDN.
+
+ We can associate variables to groups and hosts. Host variables are declared/defined on the same line as the host themselves. For
+
+```bash
+example, for the host f5:
+<<siduserID>>.f5.mysidlabs.com private_ip=<<privateIP>>
+
+<<siduserID>>.f5.mysidlabs.com - The name that Ansible will use. Since this is an FQDN Ansible will do a DNS lookup to get the IP address. We will need to modify this to a valid FQDN.
+
 private_ip=<<privateIP>> - Because we are using AWS the F5 interface is assigned a private IP and then uses NAT
 for its public IP.
-
+```
 
 *Step 6*
 ##### Modify your hosts file in your github repository
@@ -325,7 +334,8 @@ for its public IP.
 
 
 ###### Step 6.c
-*** Change <<siduserID>> to your siduser which was assign at the start of the labs. Change the private IP to the IP recorded in
+    Change <<siduserID>> to your siduser which was assign at the start of the labs. Change the private IP to the IP recorded in
+
 Step 4 of the Connecting to your F5 section. The following example shows what it would be modified to if your siduserID
 was siduser155 and the private ip was 172.31.13.240.***
     
@@ -342,32 +352,32 @@ was siduser155 and the private ip was 172.31.13.240.***
 
 ###### Step 6.e
 ###### Pull the changes you made to your repository down to the jump station.
+```bash
+Make sure you are in the ansible-f5-labs directory
+siduser155@toolkit ~/ansible-f5-labs # pwd
+/home/siduser155/ansible-f5-labs
+Issue the git pull command
+siduser155@toolkit ~/ansible-f5-labs # git pull
 
-    Make sure you are in the ansible-f5-labs directory
-    siduser155@toolkit ~/ansible-f5-labs # pwd
-    /home/siduser155/ansible-f5-labs
-    Issue the git pull command
-    siduser155@toolkit ~/ansible-f5-labs # git pull
-
-    remote: Enumerating objects: 5, done.
-    remote: Counting objects: 100% (5/5), done.
-    remote: Compressing objects: 100% (3/3), done.
-    remote: Total 3 (delta 1), reused 0 (delta 0), pack-reused 0
-    Unpacking objects: 100% (3/3), 730 bytes | 730.00 KiB/s, done.
-    From https://github.com/lonibble/ansible-f5-labs
-    6d7e7c5..65b3753 master -> origin/master
-    Updating 6d7e7c5..65b3753
-    Fast-forward
-    hosts | 2 +-
-    1 file changed, 1 insertion(+), 1 deletion(-)
-    
+remote: Enumerating objects: 5, done.
+remote: Counting objects: 100% (5/5), done.
+remote: Compressing objects: 100% (3/3), done.
+remote: Total 3 (delta 1), reused 0 (delta 0), pack-reused 0
+Unpacking objects: 100% (3/3), 730 bytes | 730.00 KiB/s, done.
+From https://github.com/lonibble/ansible-f5-labs
+6d7e7c5..65b3753 master -> origin/master
+Updating 6d7e7c5..65b3753
+Fast-forward
+hosts | 2 +-
+1 file changed, 1 insertion(+), 1 deletion(-)
+```    
     
     
     
 ## Lab1.1: Using Ansible Vault  
 
 *Step 1*
-
+```bash
 Look at the all.yaml group variable file. Notice it is not encrypted. 
 
     siduser150@toolkit ~/ansible-f5-labs # cat group_vars/all.yaml
@@ -375,12 +385,12 @@ Look at the all.yaml group variable file. Notice it is not encrypted.
     f5_password: Mys1dlabspw!
     web_username: centos
     web_key: ~/.ssh/network-key.pem
-
+```
 
 *Step 2*
 
 Encrypt all.yaml file and look at it again
-
+```bash
     siduser150@toolkit ~/ansible-f5-labs # ansible-vault encrypt group_vars/all.yaml
     New Vault password:
     Confirm New Vault password:
@@ -396,39 +406,41 @@ Encrypt all.yaml file and look at it again
     65396433643062326136383633343733383164633939643465623834663932366632396136303066
     33626334386436323031306336303135323337626432633863313431396431353639383933383563
     39643665653733633035653132633831393539386166613933323736633164643063
-    
+```    
     
 *Step 3*
 
 Use view command to unencrypt and view the file
-
-    siduser150@toolkit ~/ansible-f5-labs # ansible-vault view group_vars/all.yaml
-    Vault password:
-    f5_username: admin
-    f5_password: Mys1dlabspw!
-    web_username: centos
-    web_key: ~/.ssh/network-key.pem
+```bash
+siduser150@toolkit ~/ansible-f5-labs # ansible-vault view group_vars/all.yaml
+Vault password:
+f5_username: admin
+f5_password: Mys1dlabspw!
+web_username: centos
+web_key: ~/.ssh/network-key.pem
+```
 
 *Step 4*
 
 Use rekey command to change the file encryption key
-
-    siduser150@toolkit ~/ansible-f5-labs # ansible-vault rekey group_vars/all.yaml
-    Vault password:
-    New Vault password:
-    Confirm New Vault password:
-    Rekey successful
-    
+```bash
+siduser150@toolkit ~/ansible-f5-labs # ansible-vault rekey group_vars/all.yaml
+Vault password:
+New Vault password:
+Confirm New Vault password:
+Rekey successful
+```    
     
 *Step 5*    
 
+```bash
 Use the “- - help” command to see what other options are available. Also review the ansible-vault documentation. 
 
 Ansible-vault documentation [ansible docs](https://docs.ansible.com/ansible/latest/user_guide/vault.html#vault-ids-and-multiple-vault-passwords
 siduser150@toolkit ~/ansible-f5-labs # ansible-vault --help)
 
     siduser150@toolkit ~/ansible-f5-labs # ansible-vault --help 
-    
+```    
 
 ## Lab1.2: Gather data from f5  
 
