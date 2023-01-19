@@ -693,58 +693,58 @@ The load balancer pool can be found by navigating the menu on the left. Click on
 *Step 1*
 
 Look at the file called 1.5-bigip-pool-members.yaml
-
-    siduser250@toolkit ~/ansible-f5-labs # cat 1.5-bigip-pool-members.yaml
-    ---
-    - name: BIG-IP SETUP
-    hosts: lb
-    connection: local
-    gather_facts: false
-    tasks:
-    - name: ADD POOL MEMBERS
-    bigip_pool_member:
-    provider:
-    server: "{{ ansible_host }}"
-    user: "{{ f5_username }}"
-    password: "{{ f5_password }}"
-    server_port: 8443
-    validate_certs: false
-    state: "present"
-    name: "{{ hostvars[item].inventory_hostname }}"
-    host: "{{ hostvars[item].private_ip }}"
-    port: "80"
-    pool: "http_pool"
-    loop: "{{ groups['webservers'] }}"
-    
+```yaml
+siduser250@toolkit ~/ansible-f5-labs # cat 1.5-bigip-pool-members.yaml
+---
+   - name: BIG-IP SETUP
+ hosts: lb
+connection: local
+gather_facts: false
+tasks:
+- name: ADD POOL MEMBERS
+bigip_pool_member:
+ provider:
+server: "{{ ansible_host }}"
+user: "{{ f5_username }}"
+password: "{{ f5_password }}"
+server_port: 8443
+validate_certs: false
+state: "present"
+name: "{{ hostvars[item].inventory_hostname }}"
+host: "{{ hostvars[item].private_ip }}"
+port: "80"
+pool: "http_pool"
+loop: "{{ groups['webservers'] }}"
+```   
     
 *Step 2*
 
 Review the output and see what information is in the output
+```bash
+bigip_pool_member: - the module we are going to use
 
-    bigip_pool_member: - the module we are going to use
+state: "present" - tells the module we want this to be added
 
-    state: "present" - tells the module we want this to be added
+name: "{{hostvars[item].inventory_hostname}}" - parameter tells the module to use the inventory_hostname as
 
-    name: "{{hostvars[item].inventory_hostname}}" - parameter tells the module to use the inventory_hostname as
+the name (which will be web1 and web2).
 
-    the name (which will be web1 and web2).
+host: "{{hostvars[item].private_ip}}" - add web server IP address already defined in our inventory
 
-    host: "{{hostvars[item].private_ip}}" - add web server IP address already defined in our inventory
+port: "80" - pool member port
 
-    port: "80" - pool member port
+pool: "http_pool" - put this node into a pool named http_pool
 
-    pool: "http_pool" - put this node into a pool named http_pool
-
-    loop: "{{ groups['webservers'] }}" - loop over the list of webservers
-    
+loop: "{{ groups['webservers'] }}" - loop over the list of webservers
+```   
     
 *Step 3*
 
 Run the playbook:
-
-    siduser250@toolkit ~/ansible-f5-labs # ansible-playbook 1.5-bigip-pool-members.yaml --ask-vault-pass
+```bash
+siduser250@toolkit ~/ansible-f5-labs # ansible-playbook 1.5-bigip-pool-members.yaml --ask-vault-pass
     << output omitted >>
-    
+```    
     
 *Step 4*
 
@@ -756,7 +756,7 @@ https://<<siduserID>>.f5.mysidlabs.com:8443/
     Login information for the BIG-IP:
         username: admin
     password: found in the vault file
-    
+
 The list of nodes can be found by navigating the menu on the left. Click on Local Traffic-> then click on Nodes.
 
 ## Lab1.6: Adding a virtual server
@@ -764,7 +764,7 @@ The list of nodes can be found by navigating the menu on the left. Click on Loca
 *Step 1*
 
 Look at the file called 1.6-bigip-virtual-server.yaml
-
+```yaml
     ---
     - name: BIG-IP SETUP
     hosts: lb
@@ -786,40 +786,40 @@ Look at the file called 1.6-bigip-virtual-server.yaml
     all_profiles: ['http', 'clientssl', 'oneconnect']
     pool: "http_pool"
     snat: "Automap"
-    
+```    
     
     
 *Step 2*
     
 Review the output and see what information is in the output
 
-
-    bigip_virtual_server: - the module we are using
+```bash
+bigip_virtual_server: - the module we are using
     
-    name: "vip" - parameter tells the module to create a virtual server with name “vip”
+name: "vip" - parameter tells the module to create a virtual server with name “vip”
     
-    destination: "{{ private_ip }}" - IP address to assign for the virtual server
+destination: "{{ private_ip }}" - IP address to assign for the virtual server
     
-    port: "443" - port the virtual server will be listening on
+port: "443" - port the virtual server will be listening on
     
-    enabled_vlans: "all" - which vlans the virtual server is enbaled on
+enabled_vlans: "all" - which vlans the virtual server is enbaled on
     
-    all_profiles: ['http', 'clientssl', 'oneconnect'] – the profiles that are assigned to the virtuals server
+all_profiles: ['http', 'clientssl', 'oneconnect'] – the profiles that are assigned to the virtuals server
     
-    pool: "http_pool" - the pool to assigned to the virtual server
+pool: "http_pool" - the pool to assigned to the virtual server
     
-    snat: "Automap" - In this module we are assigning it to be Automap which means the source address on the
+snat: "Automap" - In this module we are assigning it to be Automap which means the source address on the
     
-    request that goes to the backend server will be the self-ip address of the BIG-IP
-    
+request that goes to the backend server will be the self-ip address of the BIG-IP
+ ```   
     
 *Step 3*    
 
 Run the playbook:
-
-    siduser250@toolkit ~/ansible-f5-labs # ansible-playbook 1.6-bigip-virtual-server.yaml --ask-vault-pass
+```bash
+siduser250@toolkit ~/ansible-f5-labs # ansible-playbook 1.6-bigip-virtual-server.yaml --ask-vault-pass
     << output omitted >>
-    
+```    
 
 *Step 4*  
 
@@ -830,7 +830,7 @@ The load balancer virtual server can be found by navigating the menu on the left
 If everything looks good from an F5 standpoint, verifying the web servers
 Each web server is already running apache. Exercises 1.1 through 1.5 have successfully setup the load balancer for the pool of web
 servers. Open up the public IP of the F5 load balancer in your web browser:
-
+```bash
 https://<<siduserID>>.f5.mysidlabs.com/
 Each time you refresh the host will change between web1 and web2.
     
@@ -839,18 +839,18 @@ Each time you refresh the host will change between web1 and web2.
 You can use the curl command on the jump station to access public IP. Since the entire website is loaded on the command line it is
 recommended to use something like | grep for a specific piece of the web page.
 
-    siduser250@toolkit ~/ansible-f5-labs # curl https:// <<siduserID>>.f5.mysidlabs.com:443 --insecure
-    siduser250@toolkit ~/ansible-f5-labs # curl https:// <<siduserID>>.f5.mysidlabs.com:443 --insecure
-    siduser250@toolkit ~/ansible-f5-labs # curl https:// <<siduserID>>.f5.mysidlabs.com:443 --insecure
-
+siduser250@toolkit ~/ansible-f5-labs # curl https:// <<siduserID>>.f5.mysidlabs.com:443 --insecure
+siduser250@toolkit ~/ansible-f5-labs # curl https:// <<siduserID>>.f5.mysidlabs.com:443 --insecure
+siduser250@toolkit ~/ansible-f5-labs # curl https:// <<siduserID>>.f5.mysidlabs.com:443 --insecure
+```
 
 ## Lab1.7: Adding and attaching an iRule to a virtual server 
 
 *Step 1*
 
 Look at the file called 1.7-bigip-irule.yaml
-
-    siduser250@toolkit ~/ansible-f5-labs # cat 1.7-bigip-irule.yaml
+```yaml
+siduser250@toolkit ~/ansible-f5-labs # cat 1.7-bigip-irule.yaml
     ---
     - name: BIG-IP SETUP
     hosts: lb
@@ -881,54 +881,55 @@ Look at the file called 1.7-bigip-irule.yaml
     validate_certs: false
     name: "vip"
     irules: "{{ irules }}"
-    
+```    
     
 *Step 2*
     
 Review the output and see what information is in the output
-    
-    irules: ['irule1', 'irule2'] - a list variable defined with two irules => 'irule1' and ‘irule2'
-    bigip_irule: - the module we are using
-    module: "ltm" - the module that F5 uses for the iRule
-    name: "{{ item }}" - create an iRule with the name 'irule1' and 'irule2'
-    content: "{{ lookup('file','{{item}}') }}" - content to add to the iRule using the lookup plugin
-    bigip_virtual_server: - the second module we are using
-    name: "vip" - name of the vip to assign irule to
-    irules: "{{ irules }}" - list of irules to attach to vip
-    
+```bash     
+irules: ['irule1', 'irule2'] - a list variable defined with two irules => 'irule1' and ‘irule2'
+bigip_irule: - the module we are using
+module: "ltm" - the module that F5 uses for the iRule
+name: "{{ item }}" - create an iRule with the name 'irule1' and 'irule2'
+content: "{{ lookup('file','{{item}}') }}" - content to add to the iRule using the lookup plugin
+bigip_virtual_server: - the second module we are using
+name: "vip" - name of the vip to assign irule to
+irules: "{{ irules }}" - list of irules to attach to vip
+```    
     
  *Step 3*   
  
  Look at the file called 1.7.1-irule1 and 1.7.2-irule2
- 
-    siduser250@toolkit ~/ansible-f5-labs # cat irule1
-    when HTTP_REQUEST {
-    log local0. "Accessing iRule1"
+```bash
+siduser250@toolkit ~/ansible-f5-labs # cat irule1
+when HTTP_REQUEST {
+log local0. "Accessing iRule1"
     }
     
-    siduser250@toolkit ~/ansible-f5-labs # cat irule2
-    when HTTP_REQUEST {
-    if { [HTTP::uri] ends_with "web1" } {
-    HTTP::uri "/"
-    pool http_pool member 172.31.19.21 80
-    } elseif { [HTTP::uri] ends_with "web2" } {
-    HTTP::uri "/"
-    pool http_pool member 172.31.20.204 80
-    } else {
-    pool http_pool
+siduser250@toolkit ~/ansible-f5-labs # cat irule2
+when HTTP_REQUEST {
+if { [HTTP::uri] ends_with "web1" } {
+HTTP::uri "/"
+pool http_pool member 172.31.19.21 80
+} elseif { [HTTP::uri] ends_with "web2" } {
+   HTTP::uri "/"
+pool http_pool member 172.31.20.204 80
+} else {
+pool http_pool
     }
      }
-     
+```
+
 The irule files are formatted for the F5. These tell the F5 to log locally when there is an http request.
 
 
 *Step 4*
 
 Run the playbook:
-
-    siduser250@toolkit ~/ansible-f5-labs # ansible-playbook 1.7-bigip-irule.yaml --ask-vault-pass
+```bash
+siduser250@toolkit ~/ansible-f5-labs # ansible-playbook 1.7-bigip-irule.yaml --ask-vault-pass
     << output omitted >>
-    
+```    
 
 *Step 5*
 
@@ -945,17 +946,17 @@ the iRules attached to the Virtual Server
 *Step 6*
 
 Test iRule functionality by opening web browser and going to and validating that you get to the correct web server
-
-    https://<<siduserID>>.f5.mysidlabs.com/web1
-    https://<<siduserID>>.f5.mysidlabs.com/web2
-    
+```bash
+https://<<siduserID>>.f5.mysidlabs.com/web1
+https://<<siduserID>>.f5.mysidlabs.com/web2
+```    
 ## Lab1.8: Adding and attaching an iRule to a virtual server 
 
 *Step 1*
 
 Look at the file called 1.8-bigip-virtual-server.yaml
-
-    siduser250@toolkit ~/ansible-f5-labs # cat 1.8-bigip-config.yaml
+```yaml
+siduser250@toolkit ~/ansible-f5-labs # cat 1.8-bigip-config.yaml
     ---
     - name: BIG-IP SETUP
     hosts: lb
@@ -971,28 +972,29 @@ Look at the file called 1.8-bigip-virtual-server.yaml
     server_port: 8443
     validate_certs: false
     save: true
-    
+```   
     
 *Step 2*
 
 Review the output and see what information is in the output
-
-    bigip_config: - the module we are using
-    save: true - tells the module to save the running-config to startup-config. This operation is performed after any
-    changes are made to the current running config. If no changes are made, the configuration is still saved to the
-    startup config. This option will always cause the module to return changed
-    
+```bash
+bigip_config: - the module we are using
+save: true - tells the module to save the running-config to startup-config. This operation is performed after any
+changes are made to the current running config. If no changes are made, the configuration is still saved to the
+startup config. This option will always cause the module to return changed
+```    
     
 *Step 3*    
 
 Run the playbook:
-
-    siduser250@toolkit ~/ansible-f5-labs # ansible-playbook 1.8-bigip-config.yaml --ask-vault-pass
+```bash
+siduser250@toolkit ~/ansible-f5-labs # ansible-playbook 1.8-bigip-config.yaml --ask-vault-pass
     << output omitted >>
-    
+```
+
 *Step 4*
 
-Verifying that the playbook did what you expected. Login to the F5 with your web browser to see that the configuration was saved.
+    Verifying that the playbook did what you expected. Login to the F5 with your web browser to see that the configuration was saved.
 
 ## Part 3: F5 Operational labs
 ### Lab 2.0: Disabling a pool member 
@@ -1000,17 +1002,17 @@ Verifying that the playbook did what you expected. Login to the F5 with your web
 *Step 1*
 
 Decrypt the vault
-
-    siduser150@toolkit ~/ansible-f5-labs # ansible-vault decrypt group_vars/all.yaml
+```bash
+siduser150@toolkit ~/ansible-f5-labs # ansible-vault decrypt group_vars/all.yaml
     Vault password: password
     Decryption successful
-    
+```   
     
 *Step 2*   
 
 Look at the file called 2.0-bigip-disable-pool-member.yaml
 
-
+```yaml
     siduser250@toolkit ~/ansible-f5-labs # cat 2.0-bigip-disable-pool-member.yaml
     ---
     - name: "Disabling a pool member"
@@ -1082,18 +1084,17 @@ prompt: "To disable a particular member enter member with format member_name:por
     port: "{{ member_name.user_input.split(':')[1] }}"
     host: "{{ hostvars[member_name.user_input.split(':')[0]].ansible_host }}"
     when: '"all" not in member_name.user_input'
-    
+```    
     
 *Step 3* 
 
 Review the output and see what information is in the output
-
-
-
+```bash
     -vars_prompt: - this section is used to prompt the user for input. In this case we will be asking for username and
 password.
+```
 
-***NOTE: Setting the default parameter for username and password prompts is a very bad idea. They are
+> :small_red_triangle: ***NOTE: Setting the default parameter for username and password prompts is a very bad idea. They are
 used here for simplicity in a lab environment that gets erased.***
 
     -set_fact: - this section is to store the login information for the F5 in a variable that every module can use. This eliminates the need to duplicate this information for every module
