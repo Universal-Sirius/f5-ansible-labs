@@ -47,7 +47,13 @@ You will be required to modify some files during the course of this workshop.  Y
 1. Go to [https://github.com/mysidlabs/f5-ansible-labs](https://github.com/mysidlabs/f5-ansible-labs)
 1. Click on the Fork button in the upper-right section of the page:
 ![](images/image002.png)
-***Note: Once forked, you can modify all files within Github***
+
+
+
+
+>***Note: Once forked, you can modify all files within Github***
+
+
 ### Connect to your jump host
 *Step 1*
 SSH to your jump box at `siduser###.jump.mysidlabs.com `
@@ -71,7 +77,7 @@ Are you sure you want to continue connecting (yes/no/[fingerprint])? Yes
 Warning: Permanently added 'siduser.jump.mysidlabs.com,3.132.28.93' (ECDSA) to the list of known hosts. 
 ```
 
-Note: You can remove from known hosts when workshop is completed. 
+> ***Note: You can remove from known hosts when workshop is completed.*** 
 
 When prompted for your password type in the password the instructor provides 
 
@@ -83,7 +89,7 @@ For Windows users the following is an example using Putty:
 
  Type jump.mysidlabs.com in the Host Name box and click the Open button 
 
-User and password for F5 BigIP: admin  / Mys1dlabspw!
+    User and password for F5 BigIP: admin  / Mys1dlabspw!
 
 
 For Windows users the following is an example using Putty: 
@@ -119,9 +125,9 @@ Put the address of your F5 in the address bar including the port number 8443
 
 Proceed through the warnings regarding the SSL certificate not being valid
 
-***Note: Some browsers will not allow you to connect/bypass the security warning due to settings and the fact that the SSL
+>****Note: Some browsers will not allow you to connect/bypass the security warning due to settings and the fact that the SSL
 certificate is a self-signed certificate and cannot be validated. You may have to change browsers in order to bypassthe
-security warning. ***
+security warning.****
 
 *Step 4*
 
@@ -167,39 +173,37 @@ Login into the F5 BigIP
     siduser250@toolkit ~ # git clone https://github.com/<<YOUR_GITHUB_USER>>/ansible-f5-labs
     
     
-    
-***Tip: The usage of git becomes very important to “infrastructure as code”. Everything resides in github including your
+> :exclamation: ***Tip: The usage of git becomes very important to “infrastructure as code”. Everything resides in github including your
 changes. If you lose connection from the jump box, the repository will be deleted automatically. All you need to
-do is clone your repository and you are back to where you were. ***
+do is clone your repository and you are back to where you were.***
 
 
 *Step 5*
-
-    You should now see the repository in your directory
-
-    siduser250@toolkit ~ # ls
-
-    ansible-f5-labs dev
-
+```bash
+You should now see the repository in your directory
+siduser250@toolkit ~ # ls
+ansible-f5-labs dev
+```
 
 *Step 6*
-
+```bash
     Move into the ansible-network-labs directory
-
     siduser250@toolkit ~ # cd ansible-f5-labs
-
     siduser250@toolkit ~/ansible-f5-labs #
-    
+```
+
 ##### Additional Information 
 
-    You can now explore the labs directory
-    cd = change directory
-    ls = list contents
-    pwd = display current working directory
-    cat = display file
-    nano or vim = file editor
-    tree = display file structure from current directory
+ You can now explore the labs directory
 
+```bash
+cd = change directory
+ls = list contents
+pwd = display current working directory
+cat = display file
+nano or vim = file editor
+tree = display file structure from current directory
+```
 
 ## Part 2: Basic F5 labs
 ### Topology 
@@ -217,56 +221,56 @@ your Student ID. If you are student 199 then the hostname for the F5 would be si
 
 *Step 1*
 
-    Make sure you are in the ansible-f5-labs folder
-                  siduser250@toolkit ~/ansible-f5-labs # pwd
-                  /home/siduser250/ansible-f5-labs
+Make sure you are in the ansible-f5-labs folder
+```bash
+siduser250@toolkit ~/ansible-f5-labs # pwd
+/home/siduser250/ansible-f5-labs
     
-    If you are not, change to the ansible-f5-labs directory
-    siduser250@toolkit ~ # cd ~/ansible-f5-labs/
+If you are not, change to the ansible-f5-labs directory
+siduser250@toolkit ~ # cd ~/ansible-f5-labs/
+```
 
 *Step 2*
-
-    Run the ansible command with the --version command to look at what is configured:
-             siduser250@toolkit ~/ansible-f5-labs # ansible --version
-             ansible 2.9.7
-                config file = /home/siduser250/ansible-f5-labs/ansible.cfg
-                configured module search path = ['/home/siduser250/.ansible/plugins/modules','/usr/share/ansible/plugins/modules']
-    ansible python module location = /usr/lib/python3.7/site-packages/ansible
-    executable location = /usr/bin/ansible
-      python version = 3.7.7 (default, Mar 13 2020, 10:23:39) [GCC 9.2.1 20190827 (Red Hat 9.2.1-1)]
+```bash
+Run the ansible command with the --version command to look at what is configured:
+siduser250@toolkit ~/ansible-f5-labs # ansible --version
+ansible 2.9.7
+config file = /home/siduser250/ansible-f5-labs/ansible.cfg
+configured module search path = ['/home/siduser250/.ansible/plugins/modules','/usr/share/ansible/plugins/modules']
+ansible python module location = /usr/lib/python3.7/site-packages/ansible
+executable location = /usr/bin/ansible
+python version = 3.7.7 (default, Mar 13 2020, 10:23:39) [GCC 9.2.1 20190827 (Red Hat 9.2.1-1)]
+```    
     
-    
-    This command gives you information about the version of Ansible, location of the executable, version of Python, search path for the
-    modules and location of the ansible configuration file.
+This command gives you information about the version of Ansible, location of the executable, version of Python, search path for themodules and location of the ansible configuration file.
     
     
    *Step 3*
    
-   Use the cat command to view the contents of the ansible.cfg file.
+Use the cat command to view the contents of the ansible.cfg file.
+```bash
+siduser250@toolkit ~/ansible-f5-labs # cat ansible.cfg
+[defaults]
+deprecation_warnings = False
+gathering = explicit
+retry_files_enabled = False
+inventory = ~/ansible-f5-labs/hosts
+connection = smart
+timeout = 60
+forks = 50
+host_key_checking = False
 
-    siduser250@toolkit ~/ansible-f5-labs # cat ansible.cfg
-    
-    [defaults]
-    deprecation_warnings = False
-    gathering = explicit
-    retry_files_enabled = False
-    inventory = ~/ansible-f5-labs/hosts
-    connection = smart
-    timeout = 60
-    forks = 50
-    host_key_checking = False
+[ssh_connection]
+ssh_args = -o ControlMaster=auto -o ControlPersist=30m
+scp_if_ssh = True
+[paramiko_connection]
+host_key_auto_add = True
+[persistent_connection]
+connect_timeout = 60
+command_timeout = 60
+```
 
-    [ssh_connection]
-    ssh_args = -o ControlMaster=auto -o ControlPersist=30m
-    scp_if_ssh = True
-    [paramiko_connection]
-    host_key_auto_add = True
-    [persistent_connection]
-    connect_timeout = 60
-    command_timeout = 60
-    
-    Note: the following parameters within the ansible.cfg file:
-    inventory: shows the location of the ansible inventory being used
+> Note: the following parameters within the ansible.cfg file:inventory: shows the location of the ansible inventory being used
     
     
 *Step 4*
